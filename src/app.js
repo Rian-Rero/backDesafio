@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import routes from "./routes/index.js";
 import isDevEnvironment from "./utils/general/isDevEnvironment.js";
+import { NotFoundError } from "./errors/baseErrors.js";
 
 // Inicializando instância do servidor express
 const app = express();
