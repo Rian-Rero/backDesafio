@@ -1,4 +1,15 @@
 import ToolsModel from "../models/ToolsModel.js";
+import asyncHandler from "../utils/general/asyncHandler.js";
+import * as ToolsValidator from "../validators/toolsValidator.js";
+import * as ToolsService from "../services/toolsService.js";
+
+export const get = asyncHandler(async (req, res) => {
+  const inputFilters = ToolsValidator.get(req);
+  const tools = await ToolsService.get(inputFilters);
+
+  res.status(SUCCESS_CODES.OK).json(tools);
+});
+
 class ToolsController {
   async read(req, res) {
     try {
