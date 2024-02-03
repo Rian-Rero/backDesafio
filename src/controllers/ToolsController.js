@@ -2,6 +2,7 @@ import ToolsModel from "../models/ToolsModel.js";
 import asyncHandler from "../utils/general/asyncHandler.js";
 import * as ToolsValidator from "../validators/toolsValidator.js";
 import * as ToolsService from "../services/toolsService.js";
+import { SUCCESS_CODES } from "../utils/general/constants.js";
 
 export const get = asyncHandler(async (req, res) => {
   const inputFilters = ToolsValidator.get(req);
@@ -9,53 +10,21 @@ export const get = asyncHandler(async (req, res) => {
 
   res.status(SUCCESS_CODES.OK).json(tools);
 });
+export const create = asyncHandler(async (req, res) => {
+  const inputData = ToolsValidator.create(req);
+  const newTool = await ToolsService.create(inputData);
 
-class ToolsController {
-  async read(req, res) {
-    try {
-      const category = await ToolsModel.find();
-      return res.status(200).json(category);
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error fetching Tools", error: error.message });
-    }
-  }
+  res.status(SUCCESS_CODES.CREATED).json(newTool);
+});
+export const update = asyncHandler(async (req, res) => {
+  const { _id, ...inputData } = ToolsValidator.update(req);
+  const updatedTool = await ToolsService.update({ _id, inputData });
 
-  async create(req, res) {
-    try {
-      const category = await ToolsModel.create(req.body);
-      return res.status(201).json(category);
-    } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
-    }
-  }
+  res.status(SUCCESS_CODES.OK).json(updatedTool);
+});
+export const destroy = asyncHandler(async (req, res) => {
+  const { _id } = ToolsValidator.destroy(req);
+  await ToolsService.destroy(_id);
 
-  async update(req, res) {
-    try {
-      const { id } = req.params;
-      const foundTool = await ToolsModel.findById(id);
-      if (!foundTool)
-        return res.status(404).json({ message: "Tool not found!" });
-      const category = await foundTool.set(req.body).save();
-      res.status(200).json(category);
-    } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
-    }
-  }
-
-  async delete(req, res) {
-    try {
-      const { id } = req.params;
-      const tools = await ToolsModel.findById(id);
-      await tools.deleteOne();
-      res.status(200).json({
-        mensagem: "Usuário com id " + id + " deletado com sucesso!",
-      });
-    } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
-    }
-  }
-}
-
-export default new ToolsController();
+  res.sendStatus(SUCCESS_CODES.NO_CONTENT);
+});
